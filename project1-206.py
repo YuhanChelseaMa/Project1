@@ -8,16 +8,50 @@ def getData(file):
 # get a list of dictionary objects from the file
 #Input: file name
 #Ouput: return a list of dictionary objects where
-#the keys are from the first row in the data. and the values are each of the other rows
+#the keys are from the first row in the data. and the values are each of the other rows    
+    inFile = open(file,'r')
+    lines = inFile.readlines()
+    inFile.close
 
-	pass
+    data = []
+    keys = lines[0].split(',')
+
+    for line in lines[1:]:
+    	dataDict = {}
+    	values = line.split(',')	
+    	f = values[0].strip()
+    	l = values[1].strip()
+    	e = values[2].strip()
+    	c = values[3].strip()
+    	d = values[4].strip()
+
+    	dataDict[keys[0].strip()] = f
+    	dataDict[keys[1].strip()] = l
+    	dataDict[keys[2].strip()] = e
+    	dataDict[keys[3].strip()] = c
+    	dataDict[keys[4].strip()] = d
+
+    	data.append(dataDict)
+
+    return data
+
 
 def mySort(data,col):
 # Sort based on key/column
 #Input: list of dictionaries and col (key) to sort on
 #Output: Return the first item in the sorted list as a string of just: firstName lastName
+	lst = []
 
-	pass
+	for dict in data:
+		lst.append(dict[col])
+	
+	lst.sort()
+
+	for dict in data:
+		if lst[0] == dict[col]:
+			name = dict['First']+ ' ' + dict['Last']
+
+	return name
 
 
 def classSizes(data):
@@ -26,34 +60,104 @@ def classSizes(data):
 # Output: Return a list of tuples sorted by the number of students in that class in
 # descending order
 # [('Senior', 26), ('Junior', 25), ('Freshman', 21), ('Sophomore', 18)]
+	lst = []
+	for dict in data:
+		lst.append(dict['Class'])
 
-	pass
+	f = 0
+	so = 0
+	se = 0 
+	j = 0
+
+	for x in lst: 
+		if x == 'Freshman':
+			f += 1
+		elif x == 'Sophomore':
+			so += 1
+		elif x == 'Junior':
+			j += 1
+		elif x == 'Senior':
+			se += 1
+
+	classList = [('Freshman', f), ('Sophomore', so), ('Junior', j), ('Senior', se)]
+	classList.sort(key=lambda x: x[1], reverse = True)
+
+	return classList
 
 
-def findMonth(a):
+def findMonth(data):
 # Find the most common birth month form this data
 # Input: list of dictionaries
 # Output: Return the month (1-12) that had the most births in the data
+	lst = []
+	for dic in data:
+		lst.append(dic['DOB'])
 
-	pass
+	monthList = []
+	for x in lst:
+		month = x.split('/')[0]
+		monthList.append(month) #get a list of month values
 
-def mySortPrint(a,col,fileName):
+	maxCount = monthList.count(monthList[0])
+	maxMonth = monthList[0]
+	for m in monthList:
+		if monthList.count(m) > maxCount:
+			maxCount = monthList.count(m)
+			maxMonth = m
+
+	return maxMonth
+
+
+def mySortPrint(data,col,fileName):
 #Similar to mySort, but instead of returning single
 #Student, the sorted data is saved to a csv file.
 # as fist,last,email
 #Input: list of dictionaries, col (key) to sort by and output file name
 #Output: No return value, but the file is written
+	inFile = open(fileName,'w') 
+	lst = []
 
-	pass
+	for dict in data:
+		lst.append(dict[col])
+	
+	lst.sort()
 
-def findAge(a):
+	inFile.write('First' + ',' + 'Last' + ',' + 'Email' + '\n') #headers
+
+	for s in lst:
+		for dict in data:
+			if s == dict[col]:
+				inFile.write('\n' + str(dict['First']) + ',' + str(dict['Last']) + ',' + str(dict['Email'] + '\n'))
+
+
+	inFile.close()
+
+
+def findAge(data):
 # def findAge(a):
 # Input: list of dictionaries
 # Output: Return the average age of the students and round that age to the nearest
 # integer.  You will need to work with the DOB and the current date to find the current
 # age in years.
+	from datetime import date
+	today = date.today()
 
-	pass
+	lst = []
+	for dic in data:
+		lst.append(dic['DOB'])
+
+	sum = 0
+	for x in lst:
+		y = int(x.split('/')[2])
+		m = int(x.split('/')[0])
+		d = int(x.split('/')[1])
+		age = today.year - y
+		sum += age
+	
+	average = int(sum / int(len(lst)))
+
+	return average
+
 
 
 ################################################################
@@ -70,7 +174,6 @@ def test(got, expected, pts):
     print (" XX ", end=" ")
   print("Got: ",got, "Expected: ",expected)
   return score
-
 
 # Provided main() calls the above functions with interesting inputs, using test() to check if each result is correct or not.
 def main():
@@ -115,3 +218,6 @@ def main():
 # Standard boilerplate to call the main() function that tests all your code
 if __name__ == '__main__':
     main()
+
+
+
